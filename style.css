@@ -9,7 +9,7 @@ h1 {
 .content-page {
     text-align: center;
 }
-.input-city {
+.input-city, .nbrDays{
     padding: 10px;
 }
 .btn-submit {

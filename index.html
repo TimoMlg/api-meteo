@@ -6,13 +6,20 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
     <body>
-        <div class="content-page">
+        <div id="content-page" class="content-page">
             <h1>Weather App</h1>
             <div class="form">
-                <input type="text" id="input-city" class="input-city" placeholder="Type city">
+                <input type="text" id="input-city" class="input-city" placeholder="Type city" value="Paris">
+                <select name="nbrDays" class="nbrDays" id="nbrDays">
+                    <option value="5">5 Days</option>                
+                    <option value="1">1 Day</option>
+                    <option value="2">2 Days</option>
+                    <option value="3">3 Days</option>
+                    <option value="4">4 Days</option>
+                </select>
                 <button type="button" class="btn-submit" onclick="btnGetMethod()">Submit</button>
             </div>
-            <div id="weather_result" class="weather-result">
+            <div id="weather_result" class="weather_result">
                 <div class="day" id="day"></div>
                 <div id="img_result" class="img_result"></div>
             </div>
