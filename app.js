@@ -49,10 +49,13 @@ const callApiOpenWeather = function (lat, lon) {
 //Appel et récupération des données de l'API sunrise + récupération des données de l'api openWeather pour l'heure
 const callApiSunriseSunset = function(lat, lon) {
 
-    const API_KEY = "185f5c86e1d85eed7428b5ba6701f372";
-    const urlOpenWeather = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY +"&units=metric";
+    const city = document.getElementById('input-city').value;
     const URLSunrise = "https://api.sunrise-sunset.org/json?lat=" +  lat + "&lng=" + lon;
-    
+    //const URLTimeZone = "http://api.timezonedb.com/v2.1/get-time-zone?key=V1ZSPLVJPDPX&format=json&by=position&lat=" + lat + "&lng="+ lon;
+    const API_KEY = "185f5c86e1d85eed7428b5ba6701f372";
+    const URLOpenWeather = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY +"&units=metric";
+
+
     fetch(URLSunrise) // on utilise la methode fetch, qui est asynchrone et qui existe par défaut dans le navigateur (on aurait aussi pu utiliser la librairie axios par exemple)
     // on utilise la méthode then() (NB: on pourrait aussi utiliser la syntaxe async/await)
     .then(response => { 
@@ -62,7 +65,7 @@ const callApiSunriseSunset = function(lat, lon) {
     else console.log(`Erreur du call de l'api sunrise`);
     })
     .then(dataSunrise => {
-        $.get(urlOpenWeather, function (dataOpenWeather, status) {
+        $.get(URLOpenWeather, function (dataOpenWeather) {
             displayNightAndDayWithTime(dataSunrise, dataOpenWeather);
         })
 
@@ -78,23 +81,29 @@ const callApiSunriseSunset = function(lat, lon) {
 
 //This function get the time and compare it with sunrise time and sunset time of the place and display night or day mode in DOM
 function displayNightAndDayWithTime(dataSunrise, dataOpenWeather) {
-            const unixTimeStamp = dataOpenWeather.current.dt; //get timestamp in data
-            const dateObject = new Date(unixTimeStamp*1000) //convert to millisecond
-            var timeOfCity = dateObject.toLocaleString("en-US", {hour: "numeric", minute: "numeric", second: "numeric"}) // HH:mm:ss AM
+             var unixTimeStamp = dataOpenWeather.current.dt; //get timestamp in data
+             var dateObject = new Date(unixTimeStamp*1000) //convert to millisecond
+             var timeOfCity = dateObject.toLocaleString('en-US', {hour: "numeric", minute: "numeric", second: "numeric"}) // HH:mm:ss AM
 
             const sunriseTime = dataSunrise.results.sunrise;
             const sunsetTime = dataSunrise.results.sunset;
         
-            if (Date.parse('01/01/2011 ' + timeOfCity) < Date.parse('01/01/2011 ' + sunriseTime ) || Date.parse('01/01/2011 ' + timeOfCity) > Date.parse('01/01/2011' + sunsetTime)) {
-                document.body.style.backgroundColor = "darkblue";
-                document.getElementById("weather_result").style.filter = "invert(1)"
-                document.getElementById("title_h1").style.color = "white"
-            } else {
+            if (timeOfCity > sunriseTime && timeOfCity < sunsetTime) {
                 document.body.style.backgroundColor = "aqua";
                 document.getElementById("weather_result").style.filter = "invert(0)"
                 document.getElementById("title_h1").style.color = "Black"
+            } else {
+
+                document.body.style.backgroundColor = "darkblue";
+                document.getElementById("weather_result").style.filter = "invert(1)"
+                document.getElementById("title_h1").style.color = "white"
             }
-}
+            // console.log("Lever de soleil " +sunriseTime);
+            // console.log("Coucher de soleil " +sunsetTime);
+            // console.log("utc city time : " + timeOfCity)
+} 
+
+
 
 //En cas de success de la méthode get sur l'api Openweather, on récupère et manipule les données qui nous intéressent
 const displayWeatherResultsFromOpenWeather = function (data) {
@@ -119,7 +128,7 @@ const displayWeatherResultsFromOpenWeather = function (data) {
             case data.daily[i].clouds > 0 && data.daily[i].clouds <= 50 && (data.daily[i].weather[0].id <500 || data.daily[i].weather[0].id >531 ):
                 img.src = "./weathers/cloudy.svg";
                 break;
-            case data.daily[i].clouds > 50:
+            case data.daily[i].clouds > 50 && data.daily[i].weather[0].id == 803 || data.daily[i].weather[0].id == 804:
                 img.src = "./weathers/clouds.svg";
                 break;
             case data.daily[i].snow > 0:
@@ -133,6 +142,7 @@ const displayWeatherResultsFromOpenWeather = function (data) {
             document.getElementById("img_result").appendChild(img);
             console.log(data.daily[i])
         }
+
     }
 
 
