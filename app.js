@@ -85,9 +85,11 @@ function displayNightAndDayWithTime(dataSunrise, dataOpenWeather) {
              var dateObject = new Date(unixTimeStamp*1000) //convert to millisecond
              var timeOfCity = dateObject.toLocaleString('en-US', {timeZone: 'UTC', hour: "numeric", minute: "numeric", second: "numeric"}) // HH:mm:ss AM
 
-            const sunriseTime = dataSunrise.results.sunrise;
-            const sunsetTime = dataSunrise.results.sunset;
+             const sunriseTime = dataSunrise.results.sunrise; //heure du lever de soleil
+             const sunsetTime = dataSunrise.results.sunset; //heure du coucher de soleil
         
+             // Parsing des heures car en string et comparaison.
+             // Si l'heure actuelle est entre sunrise et sunset c'est le jour sinon c'est la nuit
             if (Date.parse('01/01/1970 ' +timeOfCity) < Date.parse('01/01/1970 ' +sunriseTime) && Date.parse('01/01/1970 ' +timeOfCity) > Date.parse('01/01/1970 ' +sunsetTime)) {
                 document.body.style.backgroundColor = "darkblue";
                 document.getElementById("weather_result").style.filter = "invert(1)"
@@ -97,12 +99,8 @@ function displayNightAndDayWithTime(dataSunrise, dataOpenWeather) {
                 document.getElementById("weather_result").style.filter = "invert(0)"
                 document.getElementById("title_h1").style.color = "black"
             }
-             console.log("Lever de soleil " +sunriseTime);
-             console.log("Coucher de soleil " +sunsetTime);
-             console.log("utc city time : " + timeOfCity)
+             
 } 
-
-
 
 //En cas de success de la méthode get sur l'api Openweather, on récupère et manipule les données qui nous intéressent
 const displayWeatherResultsFromOpenWeather = function (data) {
