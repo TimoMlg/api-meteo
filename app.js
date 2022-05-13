@@ -1,6 +1,6 @@
 /*------------      Fonction d'action       -------------------
 ------------    lors de l'appui du bouton      -------------------*/
-
+let ville;
 function btnGetMethod() {
     callApiOpenCage();
 };
@@ -9,7 +9,7 @@ function btnGetMethod() {
 ------------             des API      -------------------*/
 
 const callApiOpenCage = function () {
-    const ville = document.getElementById("input-city").value;     //Récupération de la ville depuis la saisie utilisateur
+    ville = document.getElementById("input-city").value;     //Récupération de la ville depuis la saisie utilisateur
     var lat; //latitude localisation
     var lon; //longitude localisation
     const API_KEY = "7218b7f9356a4f16b14e165aa183d933"; //Api key opencage
@@ -24,6 +24,7 @@ const callApiOpenCage = function () {
     else console.log(`Erreur lorsqu'on a tenté de récupérer les data`);
     })
     .then(data => {
+        // localStorage.setItem("URLOC", URL);
         lat = data.results[0].geometry.lat;
         lon = data.results[0].geometry.lng;
         //Cette fonction fait elle même appel aux autres fonctions d'api call
@@ -39,22 +40,23 @@ const callApiOpenWeather = function (lat, lon) {
     const API_KEY = "185f5c86e1d85eed7428b5ba6701f372";
     const url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY +"&units=metric";
     
-    //appel de l'api avec la methode get et appel de la fonction getSuccess en cas de bon call de l'api, sinon error
-    $.get(url, displayWeatherResultsFromOpenWeather).done()
-    .fail(function () {
-        alert("error")
-    })
+     localStorage.setItem("URLOW", url);
+
+    if (localStorage.getItem(ville)) {
+        displayWeatherResultsFromOpenWeather(JSON.parse(localStorage.getItem(ville)));
+    } else {
+        //appel de l'api avec la methode get et appel de la fonction getSuccess en cas de bon call de l'api, sinon error
+        $.get(url, displayWeatherResultsFromOpenWeather).done()
+        .fail(function () {
+            alert("error")
+        })
+    }
 }
 
 //Appel et récupération des données de l'API sunrise + récupération des données de l'api openWeather pour l'heure
 const callApiSunriseSunset = function(lat, lon) {
 
-    const city = document.getElementById('input-city').value;
     const URLSunrise = "https://api.sunrise-sunset.org/json?lat=" +  lat + "&lng=" + lon;
-    //const URLTimeZone = "http://api.timezonedb.com/v2.1/get-time-zone?key=V1ZSPLVJPDPX&format=json&by=position&lat=" + lat + "&lng="+ lon;
-    const API_KEY = "185f5c86e1d85eed7428b5ba6701f372";
-    const URLOpenWeather = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&appid=" + API_KEY +"&units=metric";
-
 
     fetch(URLSunrise) // on utilise la methode fetch, qui est asynchrone et qui existe par défaut dans le navigateur (on aurait aussi pu utiliser la librairie axios par exemple)
     // on utilise la méthode then() (NB: on pourrait aussi utiliser la syntaxe async/await)
@@ -65,7 +67,7 @@ const callApiSunriseSunset = function(lat, lon) {
     else console.log(`Erreur du call de l'api sunrise`);
     })
     .then(dataSunrise => {
-        $.get(URLOpenWeather, function (dataOpenWeather) {
+        $.get(localStorage.getItem("URLOW"), function (dataOpenWeather) {
             displayNightAndDayWithTime(dataSunrise, dataOpenWeather);
         })
 
@@ -104,6 +106,9 @@ function displayNightAndDayWithTime(dataSunrise, dataOpenWeather) {
 
 //En cas de success de la méthode get sur l'api Openweather, on récupère et manipule les données qui nous intéressent
 const displayWeatherResultsFromOpenWeather = function (data) {
+    if (!localStorage.getItem(ville)){
+        localStorage.setItem(ville, JSON.stringify(data))
+    }
 
     reloadDivs();
 
@@ -137,7 +142,6 @@ const displayWeatherResultsFromOpenWeather = function (data) {
         }
             document.getElementById("day").appendChild(dayH3);
             document.getElementById("img_result").appendChild(img);
-            console.log(data.daily[i])
         }
 
     }
@@ -159,6 +163,8 @@ document.addEventListener("DOMContentLoaded", function () {
 function userChoiceDay() {
     const selectDays = document.getElementById("nbrDays");
     var value = selectDays.options[selectDays.selectedIndex].value;
+    // localStorage.setItem("nbrDays", value);
+
     return parseInt(value);
 }
 
