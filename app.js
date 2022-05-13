@@ -1,6 +1,7 @@
+let ville;
 /*------------      Fonction d'action       -------------------
 ------------    lors de l'appui du bouton      -------------------*/
-let ville;
+
 function btnGetMethod() {
     callApiOpenCage();
 };
@@ -9,7 +10,7 @@ function btnGetMethod() {
 ------------             des API      -------------------*/
 
 const callApiOpenCage = function () {
-    ville = document.getElementById("input-city").value;     //Récupération de la ville depuis la saisie utilisateur
+    const ville = document.getElementById("input-city").value;     //Récupération de la ville depuis la saisie utilisateur
     var lat; //latitude localisation
     var lon; //longitude localisation
     const API_KEY = "7218b7f9356a4f16b14e165aa183d933"; //Api key opencage
@@ -73,7 +74,6 @@ const callApiSunriseSunset = function(lat, lon) {
 
     })
     .catch(err => console.log(err))
-
 }
 
 
@@ -109,14 +109,15 @@ const displayWeatherResultsFromOpenWeather = function (data) {
     if (!localStorage.getItem(ville)){
         localStorage.setItem(ville, JSON.stringify(data))
     }
-
+    //Fonction qui met à jour les images et jours de la semaine (clear)
     reloadDivs();
 
         for (let i = 0; i < userChoiceDay(); i++) {
 
-            const unixTimeStamp = data.daily[i].dt; //get timestamp in data
+            //On récupère le jour de la semaine en unix timestamp (dt)
+            const unixTimeStamp = data.daily[i].dt;
             const dateObject = new Date(unixTimeStamp*1000) //convert to millisecond
-            const weekDay = dateObject.toLocaleString("en-US", {weekday: "long"}) //Tuesday
+            const weekDay = dateObject.toLocaleString("en-US", {weekday: "long"}) //Tuesday grâce au formatage de tolocaleString
             const dayH3 = document.createElement("h3");
             dayH3.innerHTML = weekDay;
     
