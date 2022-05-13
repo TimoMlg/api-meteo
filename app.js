@@ -83,24 +83,23 @@ const callApiSunriseSunset = function(lat, lon) {
 function displayNightAndDayWithTime(dataSunrise, dataOpenWeather) {
              var unixTimeStamp = dataOpenWeather.current.dt; //get timestamp in data
              var dateObject = new Date(unixTimeStamp*1000) //convert to millisecond
-             var timeOfCity = dateObject.toLocaleString('en-US', {hour: "numeric", minute: "numeric", second: "numeric"}) // HH:mm:ss AM
+             var timeOfCity = dateObject.toLocaleString('en-US', {timeZone: 'UTC', hour: "numeric", minute: "numeric", second: "numeric"}) // HH:mm:ss AM
 
             const sunriseTime = dataSunrise.results.sunrise;
             const sunsetTime = dataSunrise.results.sunset;
         
-            if (timeOfCity > sunriseTime && timeOfCity < sunsetTime) {
-                document.body.style.backgroundColor = "aqua";
-                document.getElementById("weather_result").style.filter = "invert(0)"
-                document.getElementById("title_h1").style.color = "Black"
-            } else {
-
+            if (Date.parse('01/01/1970 ' +timeOfCity) < Date.parse('01/01/1970 ' +sunriseTime) && Date.parse('01/01/1970 ' +timeOfCity) > Date.parse('01/01/1970 ' +sunsetTime)) {
                 document.body.style.backgroundColor = "darkblue";
                 document.getElementById("weather_result").style.filter = "invert(1)"
                 document.getElementById("title_h1").style.color = "white"
+            } else {
+                document.body.style.backgroundColor = "aqua";
+                document.getElementById("weather_result").style.filter = "invert(0)"
+                document.getElementById("title_h1").style.color = "black"
             }
-            // console.log("Lever de soleil " +sunriseTime);
-            // console.log("Coucher de soleil " +sunsetTime);
-            // console.log("utc city time : " + timeOfCity)
+             console.log("Lever de soleil " +sunriseTime);
+             console.log("Coucher de soleil " +sunsetTime);
+             console.log("utc city time : " + timeOfCity)
 } 
 
 
